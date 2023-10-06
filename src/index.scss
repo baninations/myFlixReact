@@ -3,3 +3,15 @@ $color: steelblue;
 .my-flix {
   color: $color;
 }
+
+.container{
+  text-align: center;
+}
+
+@media (max-width: 575px) {
+  .container {
+    display: flex;
+    justify-content: center;
+
+  }
+}

@@ -13349,6 +13349,17 @@ textarea.form-control-lg {
   color: #4682b4;
 }
 
+.container {
+  text-align: center;
+}
+
+@media (width <= 575px) {
+  .container {
+    justify-content: center;
+    display: flex;
+  }
+}
+
 .card, .imageSize {
   width: 260px;
   height: 320px;

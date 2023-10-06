@@ -10,7 +10,7 @@ import { MainView } from "./components/main-view/main-view";
 // Main component (will eventually use all the others)
 const MyFlixApplication = () => {
   return (
-    <Container>
+    <Container className="container justify-content-center align-items-center">
       <MainView />
     </Container>
   );

@@ -18,6 +18,7 @@ export const MainView = () => {
   const [user, setUser] = useState(storedUser ? storedUser : null);
   const [token, setToken] = useState(storedToken ? storedToken : null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const handleSearchInputChange = (event) => {
     setSearchQuery(event.target.value);
   };
@@ -52,115 +53,131 @@ export const MainView = () => {
     localStorage.removeItem("token");
     setUser(null);
 
+    useEffect(() => {
+      // Add an event listener to update windowWidth when the window is resized
+      const handleResize = () => {
+        setWindowWidth(window.innerWidth);
+      };
+
+      window.addEventListener("resize", handleResize);
+
+      // Clean up the event listener when the component unmounts
+      return () => {
+        window.removeEventListener("resize", handleResize);
+      };
+    }, []);
+
     return <Navigate to="/login" />;
   };
 
   return (
-    <BrowserRouter>
-      <NavigationBar user={user} onLoggedOut={hanldeLogout} />
-      <Row className="justify-content-md-center">
-        <Routes>
-          <Route
-            path="/signup"
-            element={
-              <>
-                {user ? (
-                  <Navigate to="/" />
-                ) : (
-                  <Col md={5}>
-                    <SignupView />
-                  </Col>
-                )}
-              </>
-            }
-          />
-          <Route
-            path="/login"
-            element={
-              <>
-                {user ? (
-                  <>
+    <div>
+      <BrowserRouter>
+        <NavigationBar user={user} onLoggedOut={hanldeLogout} />
+        <Row className="justify-content-md-center">
+          <Routes>
+            <Route
+              path="/signup"
+              element={
+                <>
+                  {user ? (
                     <Navigate to="/" />
-                  </>
-                ) : (
-                  <Col md={5}>
-                    <LoginView onLoggedIn={(user) => setUser(user)} />
-                  </Col>
-                )}
-              </>
-            }
-          />
+                  ) : (
+                    <Col md={5}>
+                      <SignupView />
+                    </Col>
+                  )}
+                </>
+              }
+            />
+            <Route
+              path="/login"
+              element={
+                <>
+                  {user ? (
+                    <>
+                      <Navigate to="/" />
+                    </>
+                  ) : (
+                    <Col md={5}>
+                      <LoginView onLoggedIn={(user) => setUser(user)} />
+                    </Col>
+                  )}
+                </>
+              }
+            />
 
-          <Route
-            path="/movies/:movieId"
-            element={
-              <>
-                {!user ? (
-                  <Navigate to="/login" replace />
-                ) : movies.length === 0 ? (
-                  <Col>The list is empty!</Col>
-                ) : (
-                  <Col md={8}>
-                    <MovieView movies={movies} />
-                  </Col>
-                )}
-              </>
-            }
-          />
-          <Route
-            path="/"
-            element={
-              <>
-                {!user ? (
-                  <Navigate to="/login" replace />
-                ) : movies.length === 0 ? (
-                  <Col>The list is empty</Col>
-                ) : (
-                  <>
-                    <Form className="mb-3">
-                      <Form.Control
-                        type="text"
-                        placeholder="Search favorite movies"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                      />
-                    </Form>
-                    {filteredMovies.map((movie) => (
-                      <Col
-                        className="mb-4 container"
-                        key={movie.id}
-                        xs={12}
-                        sm={6}
-                        md={4}
-                        lg={3}
-                      >
-                        <MovieCard
-                          movie={movie}
-                          user={user}
-                          method={"POST"}
-                          messageOK={"Movie added"}
-                          messageFailed={"Failed to add movie"}
-                          fav={"Add to fav"}
+            <Route
+              path="/movies/:movieId"
+              element={
+                <>
+                  {!user ? (
+                    <Navigate to="/login" replace />
+                  ) : movies.length === 0 ? (
+                    <Col>The list is empty!</Col>
+                  ) : (
+                    <Col md={8}>
+                      <MovieView movies={movies} />
+                    </Col>
+                  )}
+                </>
+              }
+            />
+            <Route
+              path="/"
+              element={
+                <>
+                  {!user ? (
+                    <Navigate to="/login" replace />
+                  ) : movies.length === 0 ? (
+                    <Col>The list is empty</Col>
+                  ) : (
+                    <>
+                      <Form className="mb-3">
+                        <Form.Control
+                          type="text"
+                          placeholder="Search favorite movies"
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
                         />
-                      </Col>
-                    ))}
-                  </>
-                )}
-              </>
-            }
-          />
-          <Route
-            path="/profile"
-            element={
-              <ProfileView
-                user={user}
-                onLoggedOut={hanldeLogout}
-                movies={movies}
-              />
-            }
-          />
-        </Routes>
-      </Row>
-    </BrowserRouter>
+                      </Form>
+                      {filteredMovies.map((movie) => (
+                        <Col
+                          className="mb-4 container"
+                          key={movie.id}
+                          xs={12}
+                          sm={6}
+                          md={4}
+                          lg={3}
+                        >
+                          <MovieCard
+                            movie={movie}
+                            user={user}
+                            method={"POST"}
+                            messageOK={"Movie added"}
+                            messageFailed={"Failed to add movie"}
+                            fav={"Add to fav"}
+                          />
+                        </Col>
+                      ))}
+                    </>
+                  )}
+                </>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProfileView
+                  user={user}
+                  onLoggedOut={hanldeLogout}
+                  movies={movies}
+                />
+              }
+            />
+          </Routes>
+        </Row>
+      </BrowserRouter>
+    </div>
   );
 };
